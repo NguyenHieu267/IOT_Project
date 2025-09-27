@@ -8,14 +8,15 @@ WebServer server(80);
 
 String ssid = "ESP32-AP";
 String password = "12345678";
-// These will be replaced with user input after "Settings"
 String wifi_ssid = "";
 String wifi_password = "";
 
+unsigned long connect_start_ms = 0;
+bool connecting = false;
 
 String mainPage() {
-  float temperature = 10;// dht.getTemperature(); // Replace these with actual readings
-  float humidity = 20; //dht.getHumidity();
+  float temperature = 10;
+  float humidity = 20;
   String led1 = led1_state ? "ON" : "OFF";
   String led2 = led2_state ? "ON" : "OFF";
 
@@ -65,7 +66,6 @@ String mainPage() {
   )rawliteral";
 }
 
-
 String settingsPage() {
   return R"rawliteral(
     <!DOCTYPE html><html><head>
@@ -105,45 +105,37 @@ String settingsPage() {
   )rawliteral";
 }
 
-
-
-void handleRoot() {
-  server.send(200, "text/html", mainPage());
-}
+// ========== Handlers ==========
+void handleRoot() { server.send(200, "text/html", mainPage()); }
 
 void handleToggle() {
   int led = server.arg("led").toInt();
-  if (led == 1) {
-    led1_state = !led1_state;
-    //TODO: Control your LED1
-    //digitalWrite(LED1_PIN, led1_state);
-  } else if (led == 2) {
-    led2_state = !led2_state;
-    //TODO: Control your LED2
-    //digitalWrite(LED2_PIN, led2_state);
-  }
-  server.send(200, "application/json", "{\"led1\":\"" + String(led1_state ? "ON":"OFF") + "\",\"led2\":\"" + String(led2_state ? "ON":"OFF") + "\"}");
+  if (led == 1) led1_state = !led1_state;
+  else if (led == 2) led2_state = !led2_state;
+  server.send(200, "application/json",
+    "{\"led1\":\"" + String(led1_state ? "ON":"OFF") +
+    "\",\"led2\":\"" + String(led2_state ? "ON":"OFF") + "\"}");
 }
 
 void handleSensors() {
-  float t = 10; //dht.getTemperature();
-  float h = 20; //dht.getHumidity();
+  float t = 10;
+  float h = 20;
   String json = "{\"temp\":"+String(t)+",\"hum\":"+String(h)+"}";
   server.send(200, "application/json", json);
 }
 
-void handleSettings() {
-  server.send(200, "text/html", settingsPage());
-}
+void handleSettings() { server.send(200, "text/html", settingsPage()); }
 
 void handleConnect() {
   wifi_ssid = server.arg("ssid");
   wifi_password = server.arg("pass");
   server.send(200, "text/plain", "Connecting....");
-  // Switch to station mode after response, see below
   isAPMode = false;
+  connecting = true;
+  connect_start_ms = millis();
 }
 
+// ========== WiFi ==========
 void setupServer() {
   server.on("/", HTTP_GET, handleRoot);
   server.on("/toggle", HTTP_GET, handleToggle);
@@ -153,13 +145,13 @@ void setupServer() {
   server.begin();
 }
 
-
 void startAP() {
+  WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid.c_str(), password.c_str());
-  IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
-  Serial.println(IP);
+  Serial.println(WiFi.softAPIP());
   isAPMode = true;
+  connecting = false;
 }
 
 void connectToWiFi() {
@@ -167,31 +159,21 @@ void connectToWiFi() {
   WiFi.begin(wifi_ssid.c_str(), wifi_password.c_str());
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
-  for (int i=0; i<20 && WiFi.status() != WL_CONNECTED; i++) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-  if (WiFi.status() == WL_CONNECTED){
-    Serial.print("STA IP address: ");
-    Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("WiFi Connect failed!");
-    startAP(); // fallback to AP
-  }
 }
 
+// ========== Main task ==========
 void main_server_task(void *pvParameters){
-  
+  pinMode(BOOT_PIN, INPUT_PULLUP);
+
   startAP();
   setupServer();
-  
+
   while(1){
     server.handleClient();
 
-    // On-the-fly mode switching (check every loop)
-    if (digitalRead(BOOT_PIN) == LOW) { // pressed (active low)
-      delay(100); // debounce
+    // Nếu nhấn BOOT thì về AP mode
+    if (digitalRead(BOOT_PIN) == LOW) {
+      delay(100);
       if (digitalRead(BOOT_PIN) == LOW) {
         if (!isAPMode) {
           startAP();
@@ -199,9 +181,22 @@ void main_server_task(void *pvParameters){
         }
       }
     }
-    if (!isAPMode && WiFi.status() != WL_CONNECTED) {
-      connectToWiFi();
-    }
-  }
 
+    // Nếu đang connect STA
+    if (connecting) {
+      if (WiFi.status() == WL_CONNECTED) {
+        Serial.print("STA IP address: ");
+        Serial.println(WiFi.localIP());
+        isAPMode = false;
+        connecting = false;
+      } else if (millis() - connect_start_ms > 10000) { // timeout 10s
+        Serial.println("WiFi connect failed! Back to AP.");
+        startAP();
+        setupServer();
+        connecting = false;
+      }
+    }
+
+    delay(10); // avoid watchdog reset
+  }
 }
