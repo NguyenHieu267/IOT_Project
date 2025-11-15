@@ -19,6 +19,15 @@ void setup()
   Serial.begin(115200);
   check_info_File(0);
 
+//   xTaskCreate(
+//     function_to_run,     // Task function
+//     "Task Name",         // Task name
+//     stack_size,          // Stack (words)
+//     parameter,           // Parameters for task
+//     priority,            // Priority
+//     handle               // Save task handle
+// );
+
   xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
   xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
   xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 2048, NULL, 2, NULL);
