@@ -1,8 +1,9 @@
 #include "coreiot.h"
+#include "global.h"
 
 // ----------- CONFIGURE THESE! -----------
-const char* coreIOT_Server = "10.235.76.226";  
-const char* coreIOT_Token = "g7drm1amhd3dchr379xu";   // Device Access Token
+const char* coreIOT_Server = "app.coreiot.io";        // CORE IOT Server
+const char* coreIOT_Token = "g8antxzs2o39jyb8xtgx";   // Device Access Token (DHT20)
 const int   mqttPort = 1883;
 // ----------------------------------------
 
@@ -14,12 +15,14 @@ void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
+    Serial.print(coreIOT_Server);
+    Serial.print("...");
     // Attempt to connect (username=token, password=empty)
     //if (client.connect("ESP32Client", coreIOT_Token, NULL)) {
     String clientId = "ESP32Client-";
     clientId += String(random(0xffff), HEX);
 
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), coreIOT_Token, NULL)) {
         
       Serial.println("connected to CoreIOT Server!");
       client.subscribe("v1/devices/me/rpc/request/+");
@@ -117,10 +120,16 @@ void coreiot_task(void *pvParameters){
         }
         client.loop();
 
+        // Read sensor data 
+        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
+        float temp = glob_temperature;
+        float humi = glob_humidity;
+        xSemaphoreGive(xMutexSensorData);
+
         // Sample payload, publish to 'v1/devices/me/telemetry'
-        String payload = "{\"temperature\":" + String(glob_temperature) +  ",\"humidity\":" + String(glob_humidity) + "}";
+        String payload = "{\"temperature\":" + String(temp) +  ",\"humidity\":" + String(humi) + "}";
         
-        client.publish("v1/devices/me/telemetry", payload.c_str());
+        client.publish("esp/telemetry", payload.c_str());
 
 
         

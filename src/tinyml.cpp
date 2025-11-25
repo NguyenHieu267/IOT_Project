@@ -1,4 +1,10 @@
 #include "tinyml.h"
+#include "global.h"
+#include "DC_motor.h"
+#include "relay_control.h"
+#include "4_led_rgb.h"
+
+extern void relay_set(bool on);
 
 // Globals, for the convenience of one-shot setup.
 namespace
@@ -51,11 +57,15 @@ void tiny_ml_task(void *pvParameters)
 
     while (1)
     {
-
-        // Prepare input data (e.g., sensor readings)
-        // For a simple example, let's assume a single float input
-        input->data.f[0] = glob_temperature;
-        input->data.f[1] = glob_humidity;
+        // Read sensor data 
+        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
+        float temp = glob_temperature;
+        float humi = glob_humidity;
+        xSemaphoreGive(xMutexSensorData);
+        
+        // Prepare input data for TinyML model
+        input->data.f[0] = temp;
+        input->data.f[1] = humi;
 
         // Run inference
         TfLiteStatus invoke_status = interpreter->Invoke();
@@ -69,6 +79,68 @@ void tiny_ml_task(void *pvParameters)
         float result = output->data.f[0];
         Serial.print("Inference result: ");
         Serial.println(result);
+
+        static int counter = 0;
+        static int mode = -1; // -1 = chưa set gì, 0 = motor mode, 1 = relay mode
+
+        // Xác định mode theo result
+        if (result <= 0.5f) {
+            if (mode != 0) {
+                // Chỉ chạy 1 lần khi đổi mode
+                mode = 0;
+                dc_motor_set(true);     // bật quạt liên tục
+                relay_set(false);       // tắt relay
+                counter = 0;            // reset hiệu ứng LED
+            }
+        } 
+        else {
+            if (mode != 1) {
+                // Chỉ chạy 1 lần khi đổi mode
+                mode = 1;
+                relay_set(true);        // bật relay liên tục
+                dc_motor_set(false);    // tắt quạt
+                counter = 0;            // reset hiệu ứng LED
+            }
+        }
+
+        // ==========================
+        //      HIỆU ỨNG LED
+        // ==========================
+
+        if (mode == 0) {
+            // MODE 0: MOTOR — LED vàng → đỏ lặp theo chu kỳ
+            if (counter < 1000) {
+                set_all_leds(255, 255, 0); // vàng
+            } else if (counter < 2000) {
+                set_all_leds(255, 0, 0);   // đỏ
+            } else {
+                counter = 0;               // lặp lại chu kỳ
+            }
+        }
+
+        if (mode == 1) {
+            // MODE 1: RELAY — LED xanh → cam nhấp nháy
+            if (counter < 500) {
+                set_all_leds(0, 255, 0);   // xanh lá
+            } 
+            else {
+                int t = counter - 500;
+                int cycle = t % 500;
+
+                if (cycle < 300) {
+                    set_all_leds(255, 128, 0); // cam
+                } else {
+                    set_all_leds(0, 0, 0);     // tắt
+                }
+            }
+
+            if (counter > 2000) counter = 0; // lặp lại chu kỳ
+        }
+
+        // Tick nhỏ cho mượt
+        vTaskDelay(1);
+        counter++;
+
 
         vTaskDelay(5000);
     }

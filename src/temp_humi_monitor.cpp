@@ -1,15 +1,11 @@
 #include "temp_humi_monitor.h"
-//ADDITION LIB
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <DHT20.h>
+#include "global.h"
 
 
 #define TEMP_HIGH 35.0
 #define TEMP_LOW  15.0
 #define HUMI_HIGH  80.0
 #define HUMI_LOW   20.0
-#define BUZZER 8
 #define LED 13
 
 DHT20 dht20;
@@ -29,13 +25,10 @@ void temp_humi_monitor(void *pvParameters){
     lcd.begin();
     lcd.backlight();
 
-    pinMode(BUZZER, OUTPUT);
     pinMode(LED, OUTPUT);
 
     Serial.println("Begin");
     while (1){
-        /* code */
-    
         dht20.read();
         // Reading temperature in Celsius
         float temperature = dht20.getTemperature();
@@ -52,10 +45,8 @@ void temp_humi_monitor(void *pvParameters){
         if (temperature > TEMP_HIGH || temperature < TEMP_LOW ||
         humidity > HUMI_HIGH || humidity < HUMI_LOW) {
         alert = true;
-        digitalWrite(BUZZER, HIGH);
         digitalWrite(LED, HIGH);
         } else {
-        digitalWrite(BUZZER, LOW);
         digitalWrite(LED, LOW);
         }
 
@@ -65,28 +56,28 @@ void temp_humi_monitor(void *pvParameters){
             lcd.setCursor(0,0);
             lcd.print("HIGH TEMP: ");
             lcd.print(temp_max,1);
-            delay(2000);
+            vTaskDelay(2000);
 
             lcd.clear();
             lcd.setCursor(0,0);
             lcd.print("HIGH HUMID: ");
             lcd.print(humi_max,1);
             lcd.print("%");
-            delay(2000);
+            vTaskDelay(2000);
 
         } else if(temperature < TEMP_LOW || humidity < HUMI_LOW){  //low temp & humid
             lcd.clear();
             lcd.setCursor(0,0);
             lcd.print("LOW TEMP: ");
             lcd.print(temp_min,1);
-            delay(2000);
+            vTaskDelay(2000);
 
             lcd.clear();
             lcd.setCursor(0,0);
             lcd.print("LOW HUMID: ");
             lcd.print(humi_min,1);
             lcd.print("%");
-            delay(2000);
+            vTaskDelay(2000);
         } else{   //normal
             lcd.clear();
             lcd.setCursor(0,0);
@@ -108,9 +99,11 @@ void temp_humi_monitor(void *pvParameters){
             //return;
         }
 
-        //Update global variables for temperature and humidity
+        //Update global variables for temperature and humidity 
+        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
         glob_temperature = temperature;
         glob_humidity = humidity;
+        xSemaphoreGive(xMutexSensorData);
 
         // Print the results
         

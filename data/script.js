@@ -1,9 +1,7 @@
 // ==================== WEBSOCKET ====================
 var gateway = `ws://${window.location.hostname}/ws`;
 var websocket;
-window.addEventListener("load", function () {
-  renderRelays();
-});
+
 window.addEventListener("load", onLoad);
 
 function onLoad(event) {
@@ -48,10 +46,7 @@ function onMessage(event) {
 }
 
 // ==================== UI NAVIGATION ====================
-let relayList = [
-  { id: 1, name: "Living room Light (LED 1)", gpio: 10, state: false },
-  { id: 2, name: "Bed room Light (LED 2)", gpio: 11, state: false },
-];
+let relayList = [];
 let deleteTarget = null;
 
 function showSection(id, event) {
@@ -68,15 +63,6 @@ function showSection(id, event) {
 
 // ==================== HOME GAUGES ====================
 window.onload = function () {
-  const style = this.document.createElement("style");
-  style.innerHTML = `/* Path thứ 2 là thanh giá trị (màu vàng/xanh) */
-        #gauge_temp path:nth-of-type(2),
-        #gauge_humi path:nth-of-type(2) {
-            stroke: #000 !important;      /* Màu viền đen */
-            stroke-width: 3px !important; /* Độ dày viền */
-            stroke-opacity: 10 !important; /* Hiển thị rõ */
-        }`;
-  document.head.appendChild(style);
   const gaugeTemp = new JustGage({
     id: "gauge_temp",
     value: 26,
