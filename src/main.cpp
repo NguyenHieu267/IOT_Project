@@ -1,3 +1,4 @@
+#include <Wire.h>
 #include "global.h"
 #include "led_blinky.h"
 #include "neo_blinky.h"
@@ -5,6 +6,7 @@
 // #include "mainserver.h"
 #include "tinyml.h"
 #include "coreiot.h"
+#include "sensor_bus.h"
 
 // include task
 #include "task_check_info.h"
@@ -16,14 +18,26 @@
 void setup()
 {
   Serial.begin(115200);
+  Wire.begin(11, 12);
   check_info_File(0);
 
-  xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
-  xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
-  xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 2048, NULL, 2, NULL);
+  static SensorBus sensorBus{};
+  if (!sensor_bus_init(&sensorBus))
+  {
+    Serial.println("Failed to initialize sensor bus");
+    while (true)
+    {
+      delay(1000);
+    }
+  }
+
+  xTaskCreate(led_blinky, "Task LED Blink", 2048, &sensorBus, 2, NULL);
+  xTaskCreate(neo_blinky, "Task NEO Blink", 2048, &sensorBus, 2, NULL);
+  xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 4096, &sensorBus, 2, NULL);
+  xTaskCreate(lcd_display_task, "Task LCD Display", 4096, &sensorBus, 2, NULL);
   // xTaskCreate(main_server_task, "Task Main Server" ,8192  ,NULL  ,2 , NULL);
-  xTaskCreate(tiny_ml_task, "Tiny ML Task" ,5120  ,NULL  ,2 , NULL);
-  xTaskCreate(coreiot_task, "CoreIOT Task" ,4096  ,NULL  ,2 , NULL);
+  xTaskCreate(tiny_ml_task, "Tiny ML Task" ,5120  ,&sensorBus  ,2 , NULL);
+  xTaskCreate(coreiot_task, "CoreIOT Task" ,4096  ,&sensorBus  ,2 , NULL);
   // xTaskCreate(Task_Toogle_BOOT, "Task_Toogle_BOOT", 4096, NULL, 2, NULL);
 }
 

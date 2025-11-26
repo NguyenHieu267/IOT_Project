@@ -1,5 +1,4 @@
 #include "led_blinky.h"
-#include "global.h"
 
 // Private helper functions for different blink patterns
 static void blinkCool();
@@ -11,20 +10,30 @@ void led_blinky(void *pvParameters)
     pinMode(LED_GPIO, OUTPUT);
     digitalWrite(LED_GPIO, LOW);
 
+    SensorBus *bus = static_cast<SensorBus *>(pvParameters);
+    if (bus == nullptr)
+    {
+        Serial.println("[led_blinky] Missing SensorBus pointer");
+        vTaskDelete(nullptr);
+    }
+
     for (;;)
     {
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        xSemaphoreGive(xMutexSensorData); 
+        SensorReading reading{};
+        if (!sensor_bus_peek(bus, reading, pdMS_TO_TICKS(1000)))
+        {
+            vTaskDelay(pdMS_TO_TICKS(200));
+            continue;
+        }
 
         // ----- Condition handling: 3 different LED behaviors -----
-        if (temp < 25.0f)
+        if (reading.temperature < 25.0f)
         {
             // COOL RANGE: T < 25°C
             // Slow, calm blink pattern
             blinkCool();
         }
-        else if (temp < 35.0f)
+        else if (reading.temperature < 35.0f)
         {
             // COMFORT RANGE: 25°C ≤ T < 35°C
             // Medium speed blink pattern

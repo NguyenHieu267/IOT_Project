@@ -1,5 +1,6 @@
 #include "tinyml.h"
 #include "global.h"
+#include "sensor_bus.h"
 #include "DC_motor.h"
 #include "relay_control.h"
 #include "4_led_rgb.h"
@@ -53,15 +54,26 @@ void setupTinyML()
 void tiny_ml_task(void *pvParameters)
 {
 
+    SensorBus *bus = static_cast<SensorBus *>(pvParameters);
+    if (bus == nullptr)
+    {
+        Serial.println("[tiny_ml_task] Missing SensorBus pointer");
+        vTaskDelete(nullptr);
+    }
+
     setupTinyML();
 
     while (1)
     {
         // Read sensor data 
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        float humi = glob_humidity;
-        xSemaphoreGive(xMutexSensorData);
+        SensorReading reading{};
+        if (!sensor_bus_peek(bus, reading, pdMS_TO_TICKS(1000)))
+        {
+            vTaskDelay(pdMS_TO_TICKS(200));
+            continue;
+        }
+        float temp = reading.temperature;
+        float humi = reading.humidity;
         
         // Prepare input data for TinyML model
         input->data.f[0] = temp;

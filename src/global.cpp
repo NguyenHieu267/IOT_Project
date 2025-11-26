@@ -1,6 +1,4 @@
 #include "global.h"
-float glob_temperature = 0;
-float glob_humidity = 0;
 
 String WIFI_SSID = "NgHao";
 String WIFI_PASS = "nguyenhao110403";
@@ -15,4 +13,3 @@ String wifi_password;
 boolean isWifiConnected = false;
 
 SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
-SemaphoreHandle_t xMutexSensorData = xSemaphoreCreateMutex();

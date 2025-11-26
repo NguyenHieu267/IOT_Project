@@ -1,5 +1,6 @@
 #include "coreiot.h"
 #include "global.h"
+#include "sensor_bus.h"
 
 // ----------- CONFIGURE THESE! -----------
 const char* coreIOT_Server = "app.coreiot.io";        // CORE IOT Server
@@ -24,7 +25,7 @@ void reconnect() {
 
     if (client.connect(clientId.c_str(), coreIOT_Token, NULL)) {
         
-      Serial.println("connected to CoreIOT Server!");
+      Serial.println("Connected to CoreIOT Server!");
       client.subscribe("v1/devices/me/rpc/request/+");
       Serial.println("Subscribed to v1/devices/me/rpc/request/+");
 
@@ -121,10 +122,14 @@ void coreiot_task(void *pvParameters){
         client.loop();
 
         // Read sensor data 
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        float humi = glob_humidity;
-        xSemaphoreGive(xMutexSensorData);
+        SensorReading reading{};
+        if (!sensor_bus_peek(bus, reading, pdMS_TO_TICKS(1000)))
+        {
+            vTaskDelay(pdMS_TO_TICKS(200));
+            continue;
+        }
+        float temp = reading.temperature;
+        float humi = reading.humidity;
 
         // Sample payload, publish to 'v1/devices/me/telemetry'
         String payload = "{\"temperature\":" + String(temp) +  ",\"humidity\":" + String(humi) + "}";

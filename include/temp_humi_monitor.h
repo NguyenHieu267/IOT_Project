@@ -3,9 +3,10 @@
 #include <Arduino.h>
 #include "LiquidCrystal_I2C.h"
 #include "DHT20.h"
-#include "global.h"
+#include "sensor_bus.h"
 
 void temp_humi_monitor(void *pvParameters);
+void lcd_display_task(void *pvParameters);
 
 
 #endif
