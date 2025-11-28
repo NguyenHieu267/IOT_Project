@@ -4,7 +4,7 @@
 
 // ----------- CONFIGURE THESE! -----------
 const char* coreIOT_Server = "app.coreiot.io";        // CORE IOT Server
-const char* coreIOT_Token = "g8antxzs2o39jyb8xtgx";   // Device Access Token (DHT20)
+const char* coreIOT_Token = "XoMXWzpgHN1l9hcdcDMj";   // Device Access Token (DHT20)
 const int   mqttPort = 1883;
 // ----------------------------------------
 
@@ -111,6 +111,13 @@ void setup_coreiot(){
 }
 
 void coreiot_task(void *pvParameters){
+
+    SensorBus *bus = static_cast<SensorBus *>(pvParameters);
+    if (bus == nullptr)
+    {
+        Serial.println("Missing SensorBus pointer");
+        vTaskDelete(nullptr);
+    }
 
     setup_coreiot();
 
