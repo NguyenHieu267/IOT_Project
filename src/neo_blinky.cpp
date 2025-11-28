@@ -1,5 +1,5 @@
 #include "neo_blinky.h"
-#include "global.h"
+#include "sensor_bus.h"
 
 
 void neo_blinky(void *pvParameters){
@@ -11,11 +11,18 @@ void neo_blinky(void *pvParameters){
     strip.clear();  // Set all pixels to off to start
     strip.show(); // Send the current state to the LED strip
 
+    SensorBus *bus = static_cast<SensorBus *>(pvParameters);
+    if (bus == nullptr) {
+        Serial.println("[neo_blinky] Missing SensorBus pointer");
+        vTaskDelete(nullptr);
+    }
     while(1) {
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float humidity = glob_humidity;
-        xSemaphoreGive(xMutexSensorData); 
-
+        SensorReading reading{};
+        if (!sensor_bus_peek(bus, reading, pdMS_TO_TICKS(1000))) {
+            vTaskDelay(pdMS_TO_TICKS(200));
+            continue;
+        }
+        float humidity = reading.humidity;
 
         // humidity < 30: yellow LED always ON
         if (humidity < 30.0) {
