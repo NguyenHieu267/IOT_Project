@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bảng điều khiển YOLO UNO</title>
+    <title>YOLO UNO CONTROL PANEL</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css" />
@@ -29,16 +29,16 @@
       </div>
 
       <div class="nav-item active" onclick="showSection('home', event)">
-        🏠 <span>Trang chủ</span>
+        🏠 <span>Home</span>
       </div>
       <div class="nav-item" onclick="showSection('device', event)">
-        ⚡ <span>Thiết bị</span>
+        ⚡ <span>Device</span>
       </div>
       <div class="nav-item" onclick="showSection('info', event)">
-        ℹ️ <span>Thông tin</span>
+        ℹ️ <span>Information</span>
       </div>
       <div class="nav-item" onclick="showSection('settings', event)">
-        ⚙️ <span>Cài đặt</span>
+        ⚙️ <span>Settings</span>
       </div>
     </div>
 
@@ -47,28 +47,28 @@
       <!-- TRANG CHỦ -->
       <div id="home" class="section fade-in">
         <header>
-          <h1>Bảng điều khiển môi trường</h1>
-          <p>Giám sát nhiệt độ và độ ẩm theo thời gian thực</p>
+          <h1>Environmental Control Panel</h1>
+          <p>Real-time temperature and humidity monitoring</p>
         </header>
 
         <div class="gauges-container">
           <div class="gauge-card">
-            <h2>🌡️ Nhiệt độ (°C)</h2>
+            <h2>🌡️ temp (°C)</h2>
             <div id="gauge_temp"></div>
           </div>
 
           <div class="gauge-card">
-            <h2>💧 Độ ẩm (%)</h2>
+            <h2>💧 humidity (%)</h2>
             <div id="gauge_humi"></div>
           </div>
         </div>
       </div>
 
-      <!-- THIẾT BỊ -->
+      <!-- Thiết bị -->
       <div id="device" class="section" style="display: none">
         <header>
-          <h1>Điều khiển Relay</h1>
-          <p>Quản lý và điều khiển các relay được kết nối.</p>
+          <h1>Relay Control</h1>
+          <p>Manage and control connected relays.</p>
         </header>
 
         <div class="device-list" id="relayContainer"></div>
@@ -81,16 +81,16 @@
       <!-- THÔNG TIN -->
       <div id="info" class="section" style="display: none">
         <header>
-          <h1>Thông tin thiết bị</h1>
-          <p>Chi tiết hệ thống và firmware sẽ hiển thị tại đây.</p>
+          <h1>System Information</h1>
+          <p>System and firmware details will be displayed here.</p>
         </header>
       </div>
 
       <!-- CÀI ĐẶT -->
       <div id="settings" class="section settings-section" style="display: none">
         <div class="settings-card">
-          <h2><i class="fa-solid fa-gear"></i> Cấu hình thiết bị</h2>
-          <p>Nhập thông tin Wi-Fi và kết nối Core IoT của bạn bên dưới.</p>
+          <h2><i class="fa-solid fa-gear"></i> Device Configuration</h2>
+          <p>Enter your Wi-Fi information and connect to Core IoT below.</p>
 
           <form id="settingsForm">
             <div class="input-group">
@@ -98,7 +98,7 @@
               <input
                 type="text"
                 id="ssid"
-                placeholder="Tên Wi-Fi (SSID)"
+                placeholder="Wi-Fi Name (SSID)"
                 required
               />
             </div>
@@ -108,7 +108,7 @@
               <input
                 type="password"
                 id="password"
-                placeholder="Mật khẩu Wi-Fi"
+                placeholder="Password (leave blank if not available)"
                 required
               />
             </div>
@@ -118,7 +118,7 @@
               <input
                 type="text"
                 id="token"
-                placeholder="Mã Token Core IoT"
+                placeholder="TOKEN CORE IOT"
                 required
               />
             </div>
@@ -128,7 +128,7 @@
               <input
                 type="text"
                 id="server"
-                placeholder="Máy chủ Core IoT"
+                placeholder="Sever (For Example: app.coreiot.io)"
                 required
               />
             </div>
@@ -138,15 +138,27 @@
               <input
                 type="number"
                 id="port"
-                placeholder="Cổng Core IoT"
+                placeholder="Gate IoT (For Example 1883)"
                 required
               />
             </div>
 
             <button type="submit" class="btn-save">
-              <i class="fa-solid fa-floppy-disk"></i> Lưu cấu hình
+              <i class="fa-solid fa-floppy-disk"></i> Save Configuration
             </button>
           </form>
+
+          <hr
+            style="margin: 20px 0; border: none; border-top: 1px solid #ddd"
+          />
+
+          <button
+            class="btn-reset"
+            onclick="resetWiFi()"
+            style="background-color: #ff6b6b; margin-top: 20px"
+          >
+            <i class="fa-solid fa-refresh"></i> Reset WiFi & Return to AP Mode
+          </button>
         </div>
       </div>
     </div>
@@ -154,17 +166,17 @@
     <!-- HỘP THOẠI THÊM RELAY -->
     <div id="addRelayDialog" class="dialog-overlay" style="display: none">
       <div class="dialog fade-in">
-        <h3><i class="fa-solid fa-plug"></i> Thêm relay mới</h3>
-        <p>Nhập tên relay và chân GPIO</p>
+        <h3><i class="fa-solid fa-plug"></i> Add new relay</h3>
+        <p>Enter the relay name and the GPIO pin</p>
         <div class="input-field">
-          <input type="text" id="relayName" placeholder="Tên relay" />
+          <input type="text" id="relayName" placeholder="Relay name" />
         </div>
         <div class="input-field">
-          <input type="number" id="relayGPIO" placeholder="Chân GPIO" />
+          <input type="number" id="relayGPIO" placeholder="GPIO Pin" />
         </div>
         <div class="dialog-buttons">
-          <button class="confirm" onclick="saveRelay()">Lưu</button>
-          <button class="cancel" onclick="closeAddRelayDialog()">Hủy</button>
+          <button class="confirm" onclick="saveRelay()">SAVE</button>
+          <button class="cancel" onclick="closeAddRelayDialog()">CANCEL</button>
         </div>
       </div>
     </div>
@@ -172,11 +184,11 @@
     <!-- HỘP THOẠI XÓA -->
     <div id="confirmDeleteDialog" class="dialog-overlay" style="display: none">
       <div class="dialog warning fade-in">
-        <h3>⚠️ Xác nhận xóa</h3>
-        <p>Bạn có chắc chắn muốn xóa relay này không?</p>
+        <h3>⚠️ confirm deletion</h3>
+        <p>Are you sure you want to delete this relay?</p>
         <div class="dialog-buttons">
-          <button class="danger" onclick="confirmDelete()">Xóa</button>
-          <button class="cancel" onclick="closeConfirmDelete()">Hủy</button>
+          <button class="danger" onclick="confirmDelete()">Delete</button>
+          <button class="cancel" onclick="closeConfirmDelete()">Cancel</button>
         </div>
       </div>
     </div>

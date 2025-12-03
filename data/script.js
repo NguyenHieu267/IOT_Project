@@ -1,9 +1,12 @@
 // ==================== WEBSOCKET ====================
 var gateway = `ws://${window.location.hostname}/ws`;
 var websocket;
-
+window.addEventListener("load", function () {
+  renderRelays();
+});
 window.addEventListener("load", onLoad);
 
+let gaugeTemp, gaugeHumi;
 function onLoad(event) {
   initWebSocket();
 }
@@ -30,23 +33,45 @@ function Send_Data(data) {
     websocket.send(data);
     console.log("📤 Gửi:", data);
   } else {
-    console.warn("⚠️ WebSocket chưa sẵn sàng!");
-    alert("⚠️ WebSocket chưa kết nối!");
+    console.warn("⚠️ WebSocket is not ready!");
+    alert("⚠️ WebSocket is not connected!");
   }
 }
 
 function onMessage(event) {
-  console.log("📩 Nhận:", event.data);
+  console.log("📩 Receive:", event.data);
   try {
     var data = JSON.parse(event.data);
-    // Có thể thêm xử lý riêng nếu cần (ví dụ cập nhật trạng thái)
+
+    // If sensor data present, update gauges
+    if (data.temperature !== undefined && data.humidity !== undefined) {
+      if (
+        typeof gaugeTemp !== "undefined" &&
+        typeof gaugeHumi !== "undefined"
+      ) {
+        gaugeTemp.refresh(Math.round(data.temperature));
+        gaugeHumi.refresh(Math.round(data.humidity));
+      }
+    }
+
+    // Handle device/state updates
+    if (data.page === "device" && data.value) {
+      const relay = relayList.find((r) => r.gpio == data.value.gpio);
+      if (relay) {
+        relay.state = data.value.status === "ON";
+        renderRelays();
+      }
+    }
   } catch (e) {
-    console.warn("Không phải JSON hợp lệ:", event.data);
+    console.warn("This json file is not valid", event.data);
   }
 }
 
 // ==================== UI NAVIGATION ====================
-let relayList = [];
+let relayList = [
+  { id: 1, name: "Living room Light (LED 1)", gpio: 10, state: false },
+  { id: 2, name: "Bed room Light (LED 2)", gpio: 11, state: false },
+];
 let deleteTarget = null;
 
 function showSection(id, event) {
@@ -63,7 +88,16 @@ function showSection(id, event) {
 
 // ==================== HOME GAUGES ====================
 window.onload = function () {
-  const gaugeTemp = new JustGage({
+  const style = this.document.createElement("style");
+  style.innerHTML = `/* Path thứ 2 là thanh giá trị (màu vàng/xanh) */
+        #gauge_temp path:nth-of-type(2),
+        #gauge_humi path:nth-of-type(2) {
+            stroke: #000 !important;      /* Màu viền đen */
+            stroke-width: 3px !important; /* Độ dày viền */
+            stroke-opacity: 10 !important; /* Hiển thị rõ */
+        }`;
+  document.head.appendChild(style);
+  gaugeTemp = new JustGage({
     id: "gauge_temp",
     value: 26,
     min: -10,
@@ -76,7 +110,7 @@ window.onload = function () {
     levelColors: ["#00BCD4", "#4CAF50", "#FFC107", "#F44336"],
   });
 
-  const gaugeHumi = new JustGage({
+  gaugeHumi = new JustGage({
     id: "gauge_humi",
     value: 60,
     min: 0,
@@ -89,10 +123,7 @@ window.onload = function () {
     levelColors: ["#42A5F5", "#00BCD4", "#0288D1"],
   });
 
-  setInterval(() => {
-    gaugeTemp.refresh(Math.floor(Math.random() * 15) + 20);
-    gaugeHumi.refresh(Math.floor(Math.random() * 40) + 40);
-  }, 3000);
+  // Gauges will be updated by WebSocket messages from the device.
 };
 
 // ==================== DEVICE FUNCTIONS ====================
@@ -185,5 +216,23 @@ document
     });
 
     Send_Data(settingsJSON);
-    alert("✅ Cấu hình đã được gửi đến thiết bị!");
+    alert("✅ Configuration has been sent to the device!");
   });
+
+// ==================== RESET WIFI ====================
+function resetWiFi() {
+  if (
+    confirm(
+      "⚠️ Are you sure you want to reset WiFi?\nThe device will return to AP mode!"
+    )
+  ) {
+    const resetJSON = JSON.stringify({
+      page: "reset",
+      value: {
+        action: "reset_wifi",
+      },
+    });
+    Send_Data(resetJSON);
+    alert("🔄 RESTING WIFI");
+  }
+}

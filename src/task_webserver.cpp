@@ -1,4 +1,5 @@
 #include "task_webserver.h"
+#include "task_handler.h"
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -10,11 +11,11 @@ void Webserver_sendata(String data)
     if (ws.count() > 0)
     {
         ws.textAll(data); // Gửi đến tất cả client đang kết nối
-        Serial.println("📤 Đã gửi dữ liệu qua WebSocket: " + data);
+        Serial.println("📤 Sent data to WebSocket: " + data);
     }
     else
     {
-        Serial.println("⚠️ Không có client WebSocket nào đang kết nối!");
+        Serial.println("⚠️ No WebSocket clients are currently connected!");
     }
 }
 
@@ -55,6 +56,12 @@ void connnectWSV()
     server.begin();
     ElegantOTA.begin(&server);
     webserver_isrunning = true;
+    
+    Serial.println("\n✅ WebServer started!");
+    Serial.println("📡 Open your browser and go to:");
+    Serial.println("   http://192.168.4.1 (AP Mode)");
+    Serial.println("   or http://" + WiFi.localIP().toString() + " (STA Mode)");
+    Serial.println("   Port: 80\n");
 }
 
 void Webserver_stop()

@@ -58,4 +58,15 @@ void handleWebSocketMessage(String message)
         String msg = "{\"status\":\"ok\",\"page\":\"setting_saved\"}";
         ws.textAll(msg);
     }
+    else if (doc["page"] == "reset")
+    {
+        Serial.println("🔄 Nhận lệnh reset WiFi...");
+        String action = doc["value"]["action"].as<String>();
+        
+        if (action.equalsIgnoreCase("reset_wifi"))
+        {
+            Serial.println("🗑️ Xóa cấu hình WiFi, quay lại AP mode...");
+            Delete_info_File();  // Xóa file cấu hình và restart
+        }
+    }
 }

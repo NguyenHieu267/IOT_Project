@@ -1,4 +1,3 @@
-
 #ifndef __TASK_WEBSERVER_H__
 #define __TASK_WEBSERVER_H__
 
@@ -11,6 +10,7 @@
 
 extern AsyncWebServer server;
 extern AsyncWebSocket ws;
+extern bool webserver_isrunning;
 
 void Webserver_stop();
 void Webserver_reconnect();

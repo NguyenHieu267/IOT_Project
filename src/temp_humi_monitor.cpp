@@ -101,8 +101,8 @@ void temp_humi_monitor(void *pvParameters){
 
         //Update global variables for temperature and humidity 
         xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        glob_temperature = temperature;
-        glob_humidity = humidity;
+        glob_temperature = round(temperature);
+        glob_humidity = round(humidity);
         xSemaphoreGive(xMutexSensorData);
 
         // Print the results
