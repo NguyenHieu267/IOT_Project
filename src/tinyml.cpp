@@ -58,10 +58,10 @@ void tiny_ml_task(void *pvParameters)
     while (1)
     {
         // Read sensor data 
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        float humi = glob_humidity;
-        xSemaphoreGive(xMutexSensorData);
+        xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
+        float temp = sharedSensorData.temperature;
+        float humi = sharedSensorData.humidity;
+        xSemaphoreGive(xSensorDataMutex);
         
         // Prepare input data for TinyML model
         input->data.f[0] = temp;

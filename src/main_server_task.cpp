@@ -17,8 +17,12 @@ void main_server_task(void *pvParameters){
         if (webserver_isrunning && ws.count() > 0) {
             // Tạo JSON document
             DynamicJsonDocument doc(256);
-            doc["temperature"] = glob_temperature;
-            doc["humidity"] = glob_humidity;
+            
+            xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
+            doc["temperature"] = sharedSensorData.temperature;
+            doc["humidity"] = sharedSensorData.humidity;
+            xSemaphoreGive(xSensorDataMutex);
+            
             doc["timestamp"] = millis();
             
             // Chuyển JSON thành string

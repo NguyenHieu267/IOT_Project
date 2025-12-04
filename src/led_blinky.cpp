@@ -13,9 +13,9 @@ void led_blinky(void *pvParameters)
 
     for (;;)
     {
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        xSemaphoreGive(xMutexSensorData); 
+        xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
+        float temp = sharedSensorData.temperature;
+        xSemaphoreGive(xSensorDataMutex); 
 
         // ----- Condition handling: 3 different LED behaviors -----
         if (temp < 25.0f)

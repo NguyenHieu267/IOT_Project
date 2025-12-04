@@ -1,6 +1,7 @@
 #include "global.h"
-float glob_temperature = 0;
-float glob_humidity = 0;
+
+// Shared sensor data (replaces glob_temperature and glob_humidity)
+SensorData sharedSensorData = {0.0, 0.0};
 
 String WIFI_SSID = "NgHao";
 String WIFI_PASS = "nguyenhao110403";
@@ -15,4 +16,4 @@ String wifi_password;
 boolean isWifiConnected = false;
 
 SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
-SemaphoreHandle_t xMutexSensorData = xSemaphoreCreateMutex();
+SemaphoreHandle_t xSensorDataMutex = xSemaphoreCreateMutex();

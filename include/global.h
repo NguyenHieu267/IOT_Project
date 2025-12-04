@@ -6,8 +6,14 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
-extern float glob_temperature;
-extern float glob_humidity;
+// Struct for sensor data (replaces glob_temperature and glob_humidity)
+typedef struct {
+    float temperature;
+    float humidity;
+} SensorData;
+
+// Shared sensor data
+extern SensorData sharedSensorData;
 
 extern String WIFI_SSID;
 extern String WIFI_PASS;
@@ -18,5 +24,5 @@ extern String CORE_IOT_PORT;
 extern boolean isWifiConnected;
 
 extern SemaphoreHandle_t xBinarySemaphoreInternet;
-extern SemaphoreHandle_t xMutexSensorData;
+extern SemaphoreHandle_t xSensorDataMutex;
 #endif

@@ -121,10 +121,10 @@ void coreiot_task(void *pvParameters){
         client.loop();
 
         // Read sensor data 
-        xSemaphoreTake(xMutexSensorData, portMAX_DELAY);
-        float temp = glob_temperature;
-        float humi = glob_humidity;
-        xSemaphoreGive(xMutexSensorData);
+        xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
+        float temp = sharedSensorData.temperature;
+        float humi = sharedSensorData.humidity;
+        xSemaphoreGive(xSensorDataMutex);
 
         // Sample payload, publish to 'v1/devices/me/telemetry'
         String payload = "{\"temperature\":" + String(temp) +  ",\"humidity\":" + String(humi) + "}";
