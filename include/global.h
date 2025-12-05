@@ -5,6 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include <Adafruit_NeoPixel.h>
 
 // Struct for sensor data (replaces glob_temperature and glob_humidity)
 typedef struct {
@@ -25,4 +26,11 @@ extern boolean isWifiConnected;
 
 extern SemaphoreHandle_t xBinarySemaphoreInternet;
 extern SemaphoreHandle_t xSensorDataMutex;
+
+extern Adafruit_NeoPixel strip;
+extern bool isLedManualMode;
+extern bool isNeoManualMode;
+extern bool isLedManualOn;
+extern bool isNeoManualOn;
+
 #endif

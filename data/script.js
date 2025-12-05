@@ -69,8 +69,8 @@ function onMessage(event) {
 
 // ==================== UI NAVIGATION ====================
 let relayList = [
-  { id: 1, name: "Living room Light (LED 1)", gpio: 10, state: false },
-  { id: 2, name: "Bed room Light (LED 2)", gpio: 11, state: false },
+  { id: 1, name: "Onboard LED", gpio: 48, state: false },
+  { id: 2, name: "NeoPixel", gpio: 45, state: false },
 ];
 let deleteTarget = null;
 

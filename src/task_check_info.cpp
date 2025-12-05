@@ -64,7 +64,7 @@ bool check_info_File(bool check)
   {
     if (!LittleFS.begin(true))
     {
-      Serial.println("❌ Lỗi khởi động LittleFS!");
+      Serial.println("❌ Failed to initialize LittleFS!");
       return false;
     }
     Load_info_File();

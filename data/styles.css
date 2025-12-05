@@ -89,7 +89,7 @@ body {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border-radius: 50px;
   box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
-  padding: 20px 40px 70px 40px; /* Trên - Phải - Dưới - Trái */
+  padding: 20px 40px 70px 40px; /* Top - Right - Bottom - Left */
   text-align: center;
   width: 300px;
   margin-top: 70px;
@@ -180,10 +180,10 @@ body {
   border: none;
   border-radius: 50%;
   width: 80px;
-  /* to hơn chút */
+  /* bigger */
   height: 80px;
   font-size: 34px;
-  /* icon lớn hơn */
+  /* bigger icon */
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   transition: 0.3s;
@@ -213,7 +213,7 @@ body {
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 850px;
-  /* ✅ to hơn */
+  /* ✅ bigger */
   max-width: 100%;
   text-align: center;
 }
@@ -241,11 +241,11 @@ body {
 .input-group {
   position: relative;
   width: 98%;
-  /* ✅ rộng gần hết khung */
+  /* ✅ full width */
   max-width: 760px;
-  /* ✅ dài hơn hẳn */
+  /* ✅ longer */
   margin-bottom: 20px;
-  /* ✅ tạo khoảng cách giữa các dòng */
+  /* ✅ add spacing between rows */
 }
 
 .input-group i {

@@ -29,11 +29,13 @@ void temp_humi_monitor(void *pvParameters){
 
     Serial.println("Begin");
     while (1){
+        /* code */
+    
         dht20.read();
         // Reading temperature in Celsius
-        float temperature = dht20.getTemperature();
+        long long temperature = dht20.getTemperature();
         // Reading humidity
-        float humidity = dht20.getHumidity();
+        long long humidity = dht20.getHumidity();
 
         //alert
         if (temperature > temp_max) temp_max = temperature;
@@ -99,7 +101,7 @@ void temp_humi_monitor(void *pvParameters){
             //return;
         }
 
-        //Update global variables for temperature and humidity 
+        //Update global variables for temperature and humidity
         xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
         sharedSensorData.temperature = round(temperature);
         sharedSensorData.humidity = round(humidity);
@@ -107,21 +109,21 @@ void temp_humi_monitor(void *pvParameters){
 
         // Print the results
         
-        Serial.print("Humidity: ");
+        Serial.print("Humid: ");
         Serial.print(humidity);
-        Serial.print("%  Temperature: ");
+        Serial.print("%  Temp: ");
         Serial.print(temperature);
         Serial.println("°C");
         Serial.print("MAX TEMP: ");
         Serial.print(temp_max);
         Serial.print("LOWEST TEMP: ");
         Serial.print(temp_min);
-        Serial.print("HIGH HUMIDITY: ");
+        Serial.print("HIGH HUMID: ");
         Serial.print(humi_max);
         Serial.print("LOWEST HUMID: ");
         Serial.println(humi_min);
         
-        vTaskDelay(5000);
+        vTaskDelay(3000);
     }
     
 }
