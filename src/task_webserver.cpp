@@ -10,7 +10,7 @@ void Webserver_sendata(String data)
 {
     if (ws.count() > 0)
     {
-        ws.textAll(data); // Gửi đến tất cả client đang kết nối
+        ws.textAll(data); // Send data to all connected clients
         Serial.println("📤 Sent data to WebSocket: " + data);
     }
     else

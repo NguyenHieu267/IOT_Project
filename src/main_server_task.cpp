@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 
 void main_server_task(void *pvParameters){
-    // Đợi WiFi kết nối trước
+    // Wait for WiFi to connect first
     while (!WiFi.isConnected()) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
@@ -13,27 +13,27 @@ void main_server_task(void *pvParameters){
     Serial.println("✅ WiFi connected, start sending data to WebServer");
     
     while (1) {
-        // Chỉ gửi dữ liệu nếu webserver đang chạy và có client kết nối
+        // Only send data if webserver is running and there is a client connected
         if (webserver_isrunning && ws.count() > 0) {
-            // Tạo JSON document
+            // Create JSON document
             DynamicJsonDocument doc(256);
-            
+
             xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
             doc["temperature"] = sharedSensorData.temperature;
             doc["humidity"] = sharedSensorData.humidity;
-            xSemaphoreGive(xSensorDataMutex);
-            
+            xSemaphoreGive(xSensorDataMutex);        
+
             doc["timestamp"] = millis();
             
-            // Chuyển JSON thành string
+            // Convert JSON to string
             String jsonData;
             serializeJson(doc, jsonData);
             
-            // Gửi qua WebSocket
+            // Send via WebSocket
             Webserver_sendata(jsonData);
         }
         
-        // Gửi dữ liệu mỗi 5 giây
+        // Send data every 5 seconds
         vTaskDelay(500);
     }
 }

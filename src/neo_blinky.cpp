@@ -12,9 +12,14 @@ void neo_blinky(void *pvParameters){
     strip.show(); // Send the current state to the LED strip
 
     while(1) {
+        if (isNeoManualMode) {
+            vTaskDelay(pdMS_TO_TICKS(100));
+            continue;
+        }
+
         xSemaphoreTake(xSensorDataMutex, portMAX_DELAY);
         float humidity = sharedSensorData.humidity;
-        xSemaphoreGive(xSensorDataMutex); 
+        xSemaphoreGive(xSensorDataMutex);  
 
 
         // humidity < 30: yellow LED always ON
