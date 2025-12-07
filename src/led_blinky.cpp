@@ -22,7 +22,7 @@ void led_blinky(void *pvParameters)
         float temp = sharedSensorData.temperature;
         xSemaphoreGive(xSensorDataMutex);
 
-        // ----- Condition handling: 3 different LED behaviors -----
+        // ----- Condition handling: 3 different LED behaviors -----        
         if (temp < 25.0f)
         {
             // COOL RANGE: T < 25°C

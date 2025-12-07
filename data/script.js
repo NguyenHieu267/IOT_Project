@@ -43,6 +43,12 @@ function onMessage(event) {
   try {
     var data = JSON.parse(event.data);
 
+    // Handle console/log messages
+    if (data.type === "log") {
+      appendConsoleLog(data.message);
+      return;
+    }
+
     // If sensor data present, update gauges
     if (data.temperature !== undefined && data.humidity !== undefined) {
       if (
@@ -62,6 +68,14 @@ function onMessage(event) {
         renderRelays();
       }
     }
+
+    // Handle setting saved response
+    if (data.page === "setting_saved" && data.status === "ok") {
+      const ssid = data.ssid || "your WiFi network";
+      alert(
+        `✅ Configuration saved!\n\n🔄 Device will restart and connect to: ${ssid}\n\n📶 Please connect to the same WiFi network and access the device at its new IP address.`
+      );
+    }
   } catch (e) {
     console.warn("This json file is not valid", event.data);
   }
@@ -71,6 +85,8 @@ function onMessage(event) {
 let relayList = [
   { id: 1, name: "Onboard LED", gpio: 48, state: false },
   { id: 2, name: "NeoPixel", gpio: 45, state: false },
+  { id: 3, name: "DC Motor", gpio: 10, state: false },
+  { id: 4, name: "Relay", gpio: 8, state: false },
 ];
 let deleteTarget = null;
 
@@ -216,7 +232,10 @@ document
     });
 
     Send_Data(settingsJSON);
-    alert("✅ Configuration has been sent to the device!");
+    // Alert will be shown when server responds with setting_saved
+    alert(
+      `✅ Configuration saved!\n\n🔄 Device will restart and connect to: ${ssid}\n\n📶 Please connect to the same WiFi network and access the device at its new IP address.`
+    );
   });
 
 // ==================== RESET WIFI ====================
@@ -235,4 +254,42 @@ function resetWiFi() {
     Send_Data(resetJSON);
     alert("🔄 RESTING WIFI");
   }
+}
+
+// ==================== CONSOLE / SERIAL MONITOR ====================
+function appendConsoleLog(message) {
+  const consoleOutput = document.getElementById("consoleOutput");
+  if (!consoleOutput) return;
+
+  const timestamp = new Date().toLocaleTimeString();
+  const logLine = document.createElement("div");
+  logLine.className = "console-line";
+  logLine.innerHTML = `<span class="console-time">[${timestamp}]</span> ${escapeHtml(
+    message
+  )}`;
+  consoleOutput.appendChild(logLine);
+
+  // Auto scroll
+  const autoScroll = document.getElementById("autoScroll");
+  if (autoScroll && autoScroll.checked) {
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  }
+
+  // Limit lines (keep last 200)
+  while (consoleOutput.children.length > 200) {
+    consoleOutput.removeChild(consoleOutput.firstChild);
+  }
+}
+
+function clearConsole() {
+  const consoleOutput = document.getElementById("consoleOutput");
+  if (consoleOutput) {
+    consoleOutput.innerHTML = "";
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }

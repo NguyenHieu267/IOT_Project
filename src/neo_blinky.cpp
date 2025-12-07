@@ -7,7 +7,7 @@ void neo_blinky(void *pvParameters){
     // Initialize the LED strip object 
     Adafruit_NeoPixel strip(LED_COUNT, NEO_PIN, NEO_GRB + NEO_KHZ800);
     strip.begin();
-    
+
     strip.clear();  // Set all pixels to off to start
     strip.show(); // Send the current state to the LED strip
 

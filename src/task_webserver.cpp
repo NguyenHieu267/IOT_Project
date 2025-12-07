@@ -1,10 +1,30 @@
 #include "task_webserver.h"
 #include "task_handler.h"
+#include "global.h"
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 bool webserver_isrunning = false;
+
+// Function to send log to both Serial and WebSocket
+void WS_LOG(String message)
+{
+    // Print to Serial
+    SERIAL_PRINTLN(message);
+    
+    // Send to WebSocket if clients are connected
+    if (ws.count() > 0)
+    {
+        StaticJsonDocument<256> doc;
+        doc["type"] = "log";
+        doc["message"] = message;
+        
+        String jsonString;
+        serializeJson(doc, jsonString);
+        ws.textAll(jsonString);
+    }
+}
 
 void Webserver_sendata(String data)
 {
@@ -43,7 +63,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
     }
 }
 
-void connnectWSV()
+void connectWSV()
 {
     ws.onEvent(onEvent);
     server.addHandler(&ws);
@@ -75,7 +95,7 @@ void Webserver_reconnect()
 {
     if (!webserver_isrunning)
     {
-        connnectWSV();
+        connectWSV();
     }
     ElegantOTA.loop();
 }

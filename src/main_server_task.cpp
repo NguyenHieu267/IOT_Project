@@ -10,7 +10,7 @@ void main_server_task(void *pvParameters){
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
     
-    Serial.println("✅ WiFi connected, start sending data to WebServer");
+    SERIAL_PRINTLN("✅ WiFi connected, start sending data to WebServer");
     
     while (1) {
         // Only send data if webserver is running and there is a client connected
@@ -34,6 +34,6 @@ void main_server_task(void *pvParameters){
         }
         
         // Send data every 5 seconds
-        vTaskDelay(500);
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }

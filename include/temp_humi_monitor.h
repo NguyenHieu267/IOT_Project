@@ -5,7 +5,10 @@
 #include "DHT20.h"
 #include "global.h"
 
+extern LiquidCrystal_I2C lcd;  // Exported for relay reinit
+
 void temp_humi_monitor(void *pvParameters);
+void reinit_lcd();  // Reinitialize LCD after relay switch
 
 
 #endif

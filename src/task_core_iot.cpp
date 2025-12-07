@@ -49,10 +49,10 @@ void processSharedAttributes(const Shared_Attribute_Data &data)
 
 RPC_Response setLedSwitchValue(const RPC_Data &data)
 {
-    Serial.println("Received Switch state");
+    SERIAL_PRINTLN("Received Switch state");
     bool newState = data;
-    Serial.print("Switch state change: ");
-    Serial.println(newState);
+    SERIAL_PRINT("Switch state change: ");
+    SERIAL_PRINTLN(newState);
     return RPC_Response("setLedSwitchValue", newState);
 }
 
@@ -91,7 +91,7 @@ void CORE_IOT_reconnect()
 
         tb.sendAttributeData("macAddress", WiFi.macAddress().c_str());
 
-        Serial.println("Subscribing for RPC...");
+        SERIAL_PRINTLN("Subscribing for RPC...");
         if (!tb.RPC_Subscribe(callbacks.cbegin(), callbacks.cend()))
         {
             // Serial.println("Failed to subscribe for RPC");
@@ -104,7 +104,7 @@ void CORE_IOT_reconnect()
             return;
         }
 
-        Serial.println("Subscribe done");
+        SERIAL_PRINTLN("Subscribe done");
 
         if (!tb.Shared_Attributes_Request(attribute_shared_request_callback))
         {

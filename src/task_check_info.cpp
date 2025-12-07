@@ -11,7 +11,7 @@ void Load_info_File()
   DeserializationError error = deserializeJson(doc, file);
   if (error)
   {
-    Serial.print(F("deserializeJson() failed: "));
+    SERIAL_PRINT(F("deserializeJson() failed: "));
   }
   else
   {
@@ -35,8 +35,8 @@ void Delete_info_File()
 
 void Save_info_File(String wifi_ssid, String wifi_pass, String CORE_IOT_TOKEN, String CORE_IOT_SERVER, String CORE_IOT_PORT)
 {
-  Serial.println(wifi_ssid);
-  Serial.println(wifi_pass);
+  SERIAL_PRINTLN(wifi_ssid);
+  SERIAL_PRINTLN(wifi_pass);
 
   DynamicJsonDocument doc(4096);
   doc["WIFI_SSID"] = wifi_ssid;
@@ -53,7 +53,7 @@ void Save_info_File(String wifi_ssid, String wifi_pass, String CORE_IOT_TOKEN, S
   }
   else
   {
-    Serial.println("Unable to save the configuration.");
+    SERIAL_PRINTLN("Unable to save the configuration.");
   }
   ESP.restart();
 };
@@ -64,7 +64,7 @@ bool check_info_File(bool check)
   {
     if (!LittleFS.begin(true))
     {
-      Serial.println("❌ Failed to initialize LittleFS!");
+      SERIAL_PRINTLN("❌ Failed to initialize LittleFS!");
       return false;
     }
     Load_info_File();

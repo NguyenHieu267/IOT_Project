@@ -40,6 +40,9 @@
       <div class="nav-item" onclick="showSection('settings', event)">
         ⚙️ <span>Settings</span>
       </div>
+      <div class="nav-item" onclick="showSection('console', event)">
+        📟 <span>Console</span>
+      </div>
     </div>
 
     <!-- Main content -->
@@ -82,8 +85,210 @@
       <div id="info" class="section" style="display: none">
         <header>
           <h1>System Information</h1>
-          <p>System and firmware details will be displayed here.</p>
+          <p>Hardware components and system status</p>
         </header>
+
+        <div class="info-grid">
+          <!-- System Info Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-microchip"></i>
+              <h3>System</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Board:</span>
+              <span class="info-value">ESP32-S3</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Firmware:</span>
+              <span class="info-value">YoloUNO IoT v1.0</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">RAM:</span>
+              <span class="info-value">512KB SRAM</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Flash:</span>
+              <span class="info-value">8MB</span>
+            </div>
+          </div>
+
+          <!-- Sensors Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-temperature-half"></i>
+              <h3>Sensors</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">DHT20:</span>
+              <span class="info-value status-online">
+                <i class="fa-solid fa-circle-check"></i> Active
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Type:</span>
+              <span class="info-value">Temp & Humidity</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Interface:</span>
+              <span class="info-value">I2C</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Update Rate:</span>
+              <span class="info-value">3 seconds</span>
+            </div>
+          </div>
+
+          <!-- Display Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-tv"></i>
+              <h3>Display</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">LCD I2C:</span>
+              <span class="info-value status-online">
+                <i class="fa-solid fa-circle-check"></i> Active
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Size:</span>
+              <span class="info-value">16x2 Characters</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Address:</span>
+              <span class="info-value">0x21 (33)</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Interface:</span>
+              <span class="info-value">I2C</span>
+            </div>
+          </div>
+
+          <!-- Actuators Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-gears"></i>
+              <h3>Actuators</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">DC Motor:</span>
+              <span class="info-value">GPIO 10</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Relay:</span>
+              <span class="info-value">GPIO 8</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Water Pump:</span>
+              <span class="info-value">Via Relay</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Power:</span>
+              <span class="info-value">5V DC</span>
+            </div>
+          </div>
+
+          <!-- LED Indicators Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-lightbulb"></i>
+              <h3>LED Indicators</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Onboard LED:</span>
+              <span class="info-value">GPIO 48</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">NeoPixel:</span>
+              <span class="info-value">GPIO 45 (1 LED)</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">RGB Strip:</span>
+              <span class="info-value">GPIO 6 (4 LEDs)</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Alert LED:</span>
+              <span class="info-value">GPIO 13</span>
+            </div>
+          </div>
+
+          <!-- AI Model Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-brain"></i>
+              <h3>TinyML AI</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Model:</span>
+              <span class="info-value status-online">
+                <i class="fa-solid fa-circle-check"></i> Active
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Type:</span>
+              <span class="info-value">DHT Anomaly Detection</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Inference:</span>
+              <span class="info-value">Every 2 seconds</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Classes:</span>
+              <span class="info-value">3 (Normal/Warning/Critical)</span>
+            </div>
+          </div>
+
+          <!-- Connectivity Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-wifi"></i>
+              <h3>Connectivity</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">WiFi Mode:</span>
+              <span class="info-value">AP + STA</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">WebSocket:</span>
+              <span class="info-value status-online">
+                <i class="fa-solid fa-circle-check"></i> Connected
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">MQTT:</span>
+              <span class="info-value">CoreIOT Integration</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">OTA Update:</span>
+              <span class="info-value">Supported</span>
+            </div>
+          </div>
+
+          <!-- RTOS Tasks Card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <i class="fa-solid fa-list-check"></i>
+              <h3>FreeRTOS Tasks</h3>
+            </div>
+            <div class="info-item">
+              <span class="info-label">LED Blink:</span>
+              <span class="info-value">Priority 2</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Sensor Monitor:</span>
+              <span class="info-value">Priority 2</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">TinyML Task:</span>
+              <span class="info-value">Priority 2</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">WebServer:</span>
+              <span class="info-value">Priority 2</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Setting -->
@@ -160,6 +365,22 @@
             <i class="fa-solid fa-refresh"></i> Reset WiFi & Return to AP Mode
           </button>
         </div>
+      </div>
+
+      <!-- Console / Serial Monitor -->
+      <div id="console" class="section" style="display: none">
+        <header>
+          <h1>📟 Serial Monitor</h1>
+          <p>Real-time logs from device</p>
+        </header>
+        <div class="console-controls">
+          <button class="btn-clear" onclick="clearConsole()">🗑️ Clear</button>
+          <label
+            ><input type="checkbox" id="autoScroll" checked /> Auto
+            Scroll</label
+          >
+        </div>
+        <div id="consoleOutput" class="console-output"></div>
       </div>
     </div>
 

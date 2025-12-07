@@ -12,6 +12,7 @@ extern AsyncWebServer server;
 extern AsyncWebSocket ws;
 extern bool webserver_isrunning;
 
+void WS_LOG(String message);
 void Webserver_stop();
 void Webserver_reconnect();
 void Webserver_sendata(String data);

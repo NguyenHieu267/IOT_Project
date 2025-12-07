@@ -4,14 +4,14 @@ void startAP()
 {
     WiFi.mode(WIFI_AP);
     WiFi.softAP(String(SSID_AP), String(PASS_AP));
-    Serial.print("📡 AP Mode Started!\n");
-    Serial.print("SSID: ");
-    Serial.println(String(SSID_AP));
-    Serial.print("Password: ");
-    Serial.println(String(PASS_AP));
-    Serial.print("🌐 AP IP: ");
-    Serial.println(WiFi.softAPIP());
-    Serial.println("✅ Connect to this WiFi and open: http://192.168.4.1");
+    SERIAL_PRINTLN("📡 AP Mode Started!");
+    SERIAL_PRINT("SSID: ");
+    SERIAL_PRINTLN(String(SSID_AP));
+    SERIAL_PRINT("Password: ");
+    SERIAL_PRINTLN(String(PASS_AP));
+    SERIAL_PRINT("🌐 AP IP: ");
+    SERIAL_PRINTLN(WiFi.softAPIP());
+    SERIAL_PRINTLN("✅ Connect to this WiFi and open: http://192.168.4.1");
 }
 
 void startSTA()
@@ -38,7 +38,7 @@ void startSTA()
 
     }
     //Give a semaphore here
-    Serial.println("✅ WiFi connected. IP address: " + WiFi.localIP().toString());
+    SERIAL_PRINTLN("✅ WiFi connected. IP address: " + WiFi.localIP().toString());
     xSemaphoreGive(xBinarySemaphoreInternet);
 }
 
