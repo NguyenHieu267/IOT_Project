@@ -1,5 +1,6 @@
 ﻿#  ESP32-S3 IoT Smart System with TinyML
-**THIS REPO WAS CREATED BY AI, BUT I HAVE CHECK THE CONTENT; HOWEVER, ERRORS ARE UNAVOIDABLE. IF THERE ARE ANY MISTAKES, PLEASE POINT THEM OUT. THANK YOU**
+**THIS REPO WAS CREATED BY AI. I HAVE CHECK THE CONTENT; HOWEVER, ERRORS ARE UNAVOIDABLE. IF THERE ARE ANY MISTAKES, PLEASE POINT THEM OUT. THANK YOU**
+
 A comprehensive IoT system built on ESP32-S3 featuring real-time sensor monitoring, TinyML anomaly detection, web-based control interface, and MQTT cloud connectivity. 
 
 ##  Table of Contents
