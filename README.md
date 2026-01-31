@@ -1,19 +1,16 @@
 ﻿#  ESP32-S3 IoT Smart System with TinyML
-
-A comprehensive IoT system built on ESP32-S3 featuring real-time sensor monitoring, TinyML anomaly detection, web-based control interface, and MQTT cloud connectivity.
+**THIS REPO WAS CREATED BY AI, BUT I HAVE CHECK THE CONTENT; HOWEVER, ERRORS ARE UNAVOIDABLE. IF THERE ARE ANY MISTAKES, PLEASE POINT THEM OUT. THANK YOU**
+A comprehensive IoT system built on ESP32-S3 featuring real-time sensor monitoring, TinyML anomaly detection, web-based control interface, and MQTT cloud connectivity. 
 
 ##  Table of Contents
 
 - [Features](#features)
 - [Hardware Requirements](#hardware-requirements)
-- [Software Architecture](#software-architecture)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [System Components](#system-components)
 - [Web Interface](#web-interface)
 - [Configuration](#configuration)
-- [API Reference](#api-reference)
-- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -21,7 +18,7 @@ A comprehensive IoT system built on ESP32-S3 featuring real-time sensor monitori
 
 ### Core Capabilities
 -  **Real-time Environmental Monitoring**: DHT20 temperature & humidity sensor with LCD display
--  **TinyML Anomaly Detection**: On-device AI inference using TensorFlow Lite Micro
+-  **TinyML Anomaly Detection**: TinyML using TensorFlow Lite Micro
 -  **Web Control Interface**: Responsive web UI with WebSocket for real-time bidirectional communication
 -  **Data Visualization**: JustGage gauges for temperature/humidity, auto-scrolling console logs
 -  **Cloud Connectivity**: MQTT integration with CoreIOT platform
@@ -70,8 +67,6 @@ A comprehensive IoT system built on ESP32-S3 featuring real-time sensor monitori
 | Relay Module | 1-Channel | 8 | Digital Out | Water pump/shutoff |
 
 ---
-
-##  Software Architecture
 
 ### FreeRTOS Task Structure
 
@@ -161,9 +156,9 @@ IOT_Proj/
    cd IOT_Proj
    ```
 
-2. **Upload Filesystem** (web interface files)
+2. **Upload Filesystem** (REQUIREMENTS - PlatformIO (VS Code) + YOLO UNO (ESP32))    
    ```bash
-   pio run -t uploadfs -e yolo_uno
+   pio run -t uploadfs -e yolo_uno               
    ```
 
 3. **Compile and Upload Firmware**
@@ -175,6 +170,9 @@ IOT_Proj/
    ```bash
    pio device monitor -e yolo_uno
    ```
+### NOTE: 
+1. Instead of using command you can use the button from PlatformIO in the follow order( Erase Flash -> Build Filesystem Image -> Upload FileSystem Image -> Build -> Upload and Monitor)
+2. Erase Flash is press for 1st use and Build + Upload FileSystem Image is press when you configure in data folder
 
 ### First Boot
 
@@ -282,56 +280,3 @@ Edit temp_humi_monitor.cpp:
 #define TEMP_WARNING_HIGH   30.0
 #define HUMI_CRITICAL_HIGH  80.0
 ```
-
----
-
-##  API Reference
-
-### Hardware Control
-```cpp
-void dc_motor_set(bool on);           // Control DC motor
-void relay_set(bool on);              // Control relay
-void set_all_leds(int r, int g, int b);  // Set RGB strip
-```
-
-### Thread-Safe Serial
-```cpp
-SERIAL_PRINT("Hello");               // Thread-safe print
-SERIAL_PRINTLN("World");             // Thread-safe println
-SERIAL_PRINTF("Temp: %.1f\n", temp); // Thread-safe printf
-```
-
-### WebSocket Logging
-```cpp
-WS_LOG("Status message");  // Send to Serial + web console
-```
-
----
-
-##  Troubleshooting
-
-### LCD Shows Garbage Characters
-- **Cause**: Relay EMI interference
-- **Solution**: Add flyback diode (1N4007) across relay coil
-
-### WebSocket Disconnects
-- **Solution**: Increase task stack size to 8192+ bytes
-
-### TinyML Not Working
-- **Check**: Stack size  8192 for tiny_ml_task
-
-### WiFi Fails
-- Verify 2.4GHz network (not 5GHz)
-- Reset via Settings  Reset WiFi
-
----
-
-##  License
-
-MIT License
-
----
-
-**Version**: 1.0.0
-**Status**: Production Ready 
-**Platform**: ESP32-S3 with FreeRTOS + PlatformIO
